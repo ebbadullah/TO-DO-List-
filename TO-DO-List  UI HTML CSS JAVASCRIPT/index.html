@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+        }
+
+        video {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh; 
+            object-fit: cover; 
+            z-index: -1; 
+        }
+
+        #form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1; 
+            background-color: rgba(85, 112, 134, 0.651); 
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        input {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #TaskStore {
+            margin-top: 20px;
+            text-align: center;
+            z-index: 1; 
+            height: 300px; 
+            overflow-y: auto; 
+        }
+        
+        #TaskStore p {
+            background-color: rgba(0, 0, 0, 0.5); 
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #TaskStore i {
+            color: #f8f8f8;
+            cursor: pointer;
+        }
+
+        .edit-input {
+            width: 80%;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <video src="./backgroud.mp4" autoplay muted loop></video>
+
+
+    <form id="form">
+        <input type="text" id="inp" placeholder="Add a task">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <div id="TaskStore">
+    </div>
+
+    
+    <script>
+        let form = document.getElementById("form");
+        let taskStore = document.getElementById("TaskStore");
+        let AllTaskStore = [];
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault(); 
+            
+            let taskInput = e.target.inp.value; 
+
+            if (taskInput === "") { 
+                alert("Please enter a task!");
+            } else {
+                AllTaskStore.push({ text: taskInput, editing: false }); 
+                form.reset(); 
+
+               
+                allTaskReceived(); 
+            }
+        });
+
+        function allTaskReceived() {
+            taskStore.innerHTML = ""; 
+            AllTaskStore.forEach((task, index) => {
+                taskStore.innerHTML += `
+                    <p>
+                        ${
+                            task.editing
+                            ? `<input class="edit-input" type="text" value="${task.text}" onblur="saveEdit(${index}, this.value)">`
+                            : `<i>${task.text}</i>`
+                        }
+                        <span>
+                            <i class="fa fa-pen" onclick="editTask(${index})"></i>
+                            <i class="fa fa-trash" onclick="deleteTask(${index})"></i>
+                        </span>
+                    </p>`;
+            });
+        }
+
+        function deleteTask(index) {
+            AllTaskStore.splice(index, 1); 
+            allTaskReceived(); 
+        }
+
+        function editTask(index) {
+            AllTaskStore[index].editing = true; 
+            allTaskReceived();
+        }
+
+        function saveEdit(index, newValue) {
+            if (newValue !== "") {
+                AllTaskStore[index].text = newValue; 
+            }
+            AllTaskStore[index].editing = false;
+            allTaskReceived();
+        }
+    </script>
+
+</body>
+</html>
